@@ -12,7 +12,7 @@ export default function Navbar() {
           </div>
           <div>
             <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-none mb-1">
-              CA Final Portal
+              CA Foundation Portal
             </h1>
             <p className="text-[11px] sm:text-xs font-semibold text-indigo-600 flex items-center gap-1 leading-none">
               <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 inline shrink-0" />

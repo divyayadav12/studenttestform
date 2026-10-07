@@ -290,7 +290,7 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© {new Date().getFullYear()} CA Final Online Assessment System. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} CA Foundation Online Assessment System. All rights reserved.</p>
           <p className="font-medium text-slate-400">Single Public Student Link System</p>
         </div>
       </footer>

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { User, Mail, Calendar, Award, ArrowRight, Clock, ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const ATTEMPT_OPTIONS = [
+  "May 2026",
   "September 2026",
   "January 2027",
   "May 2027",
-  "September 2027",
   "Other"
 ];
 
@@ -15,7 +15,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
   const [formData, setFormData] = useState(initialData || {
     studentName: '',
     email: '',
-    caAttempt: 'September 2026',
+    caAttempt: 'May 2026',
     examAttemptDate: ''
   });
 
@@ -99,7 +99,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     }
 
     if (!formData.caAttempt) {
-      newErrors.caAttempt = "Please select your CA Final Attempt";
+      newErrors.caAttempt = "Please select your CA Foundation Attempt";
     }
     if (!formData.examAttemptDate) {
       newErrors.examAttemptDate = "Please pick your Exam Attempt Date";
@@ -126,7 +126,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
               Examination Portal
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              CA Final Online Test
+              CA Foundation Online Test
             </h2>
             <p className="mt-2 text-indigo-100 text-sm sm:text-base font-normal">
               Please enter your details before starting the test.
@@ -222,10 +222,10 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
 
           {/* Grid for Attempt Dropdown & Date Picker */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* CA Final Attempt */}
+            {/* CA Foundation Attempt */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                CA Final Attempt <span className="text-rose-500">*</span>
+                CA Foundation Attempt <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
