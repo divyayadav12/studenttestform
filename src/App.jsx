@@ -3,18 +3,13 @@ import Navbar from './components/Navbar';
 import StudentDetailsForm from './components/StudentDetailsForm';
 import TestQuestionCard from './components/TestQuestionCard';
 import ResultCard from './components/ResultCard';
-import GoogleSheetsModal from './components/GoogleSheetsModal';
 
 import { TEST_QUESTIONS, DEFAULT_SCRIPT_URL } from './data/questions';
 
 const STORAGE_KEY = 'ca_final_test_state_v1';
-const SCRIPT_URL_KEY = 'ca_final_test_script_url_v1';
 
 export default function App() {
-  // Configured Script URL
-  const [scriptUrl, setScriptUrl] = useState(() => {
-    return localStorage.getItem(SCRIPT_URL_KEY) || DEFAULT_SCRIPT_URL;
-  });
+  const scriptUrl = DEFAULT_SCRIPT_URL;
 
   // Main application state
   const [step, setStep] = useState('details'); // 'details' | 'test' | 'result'
@@ -25,15 +20,7 @@ export default function App() {
   
   // Timing data
   const [testStartTime, setTestStartTime] = useState(null);
-  const [testEndTime, setTestEndTime] = useState(null);
-  const [isTimeExpiredSubmission, setIsTimeExpiredSubmission] = useState(false);
-
-  // Result state
   const [resultData, setResultData] = useState(null);
-  const [submissionStatus, setSubmissionStatus] = useState('idle'); // 'idle' | 'sending' | 'success' | 'failed' | 'local_only'
-
-  // Modal control
-  const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
 
   // 1. Restore persistent state on mount
   useEffect(() => {
@@ -45,7 +32,6 @@ export default function App() {
           setStudentData(parsed.studentData);
           setAnswers(parsed.answers || {});
           setResultData(parsed.resultData);
-          setSubmissionStatus(parsed.submissionStatus || 'success');
           setStep('result');
         } else if (parsed.step === 'test' && parsed.studentData) {
           setStudentData(parsed.studentData);
@@ -77,22 +63,14 @@ export default function App() {
     }
   }, [step, studentData, currentIndex, answers, timeLeft, testStartTime]);
 
-  // Handle saving new Google Apps Script URL
-  const handleSaveScriptUrl = (newUrl) => {
-    setScriptUrl(newUrl);
-    localStorage.setItem(SCRIPT_URL_KEY, newUrl);
-  };
-
-  // Helper to send data to Google Apps Script
+  // Silent background transmission to Google Sheets Apps Script API
   const sendToGoogleSheets = async (payload) => {
     if (!scriptUrl || scriptUrl.includes('YOUR_DEPLOYED_SCRIPT_ID')) {
-      setSubmissionStatus('failed');
-      return false;
+      console.log("Apps Script Web App URL not yet configured in src/data/questions.js");
+      return;
     }
 
-    setSubmissionStatus('sending');
     try {
-      // Send as POST JSON payload using mode 'no-cors' or standard text/plain to handle Google Apps Script CORS
       await fetch(scriptUrl, {
         method: 'POST',
         headers: {
@@ -100,13 +78,8 @@ export default function App() {
         },
         body: JSON.stringify(payload),
       });
-
-      setSubmissionStatus('success');
-      return true;
     } catch (err) {
-      console.error("Google Sheets POST Error:", err);
-      setSubmissionStatus('failed');
-      return false;
+      console.error("Background Google Sheets push error:", err);
     }
   };
 
@@ -150,7 +123,6 @@ export default function App() {
     const wrongCount = TEST_QUESTIONS.length - correctCount;
     const percentage = Math.round((correctCount / TEST_QUESTIONS.length) * 100);
 
-    // Calculate total time taken in format "X min Y sec"
     const totalMs = (endTime || Date.now()) - (startTime || Date.now());
     const totalSecs = Math.max(1, Math.floor(totalMs / 1000));
     const mins = Math.floor(totalSecs / 60);
@@ -182,8 +154,6 @@ export default function App() {
   // 4. Submit Complete Test action
   const handleFinalSubmit = useCallback(async (expiredByTime = false) => {
     const endTime = Date.now();
-    setTestEndTime(endTime);
-    setIsTimeExpiredSubmission(expiredByTime);
 
     const calculated = calculateResult(answers, testStartTime, endTime, expiredByTime);
     setResultData(calculated);
@@ -213,9 +183,8 @@ export default function App() {
       status: calculated.status
     };
 
-    // Send payload to Google Apps Script
-    const isSent = await sendToGoogleSheets(payload);
-    const statusVal = isSent ? 'success' : 'failed';
+    // Silent background transmission to Google Sheets
+    sendToGoogleSheets(payload);
 
     // Persist final submission state in localStorage to block retaking
     const finalSavedState = {
@@ -223,8 +192,7 @@ export default function App() {
       studentData,
       answers,
       resultData: calculated,
-      submitted: true,
-      submissionStatus: statusVal
+      submitted: true
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(finalSavedState));
   }, [answers, testStartTime, studentData, calculateResult, scriptUrl]);
@@ -239,47 +207,10 @@ export default function App() {
     }
   };
 
-  // Retry submission if Google Sheets sync failed
-  const handleRetrySubmission = async () => {
-    if (!resultData || !studentData) return;
-    const endTimeFormatted = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    const payload = {
-      studentName: studentData.studentName,
-      email: studentData.email,
-      caAttempt: studentData.caAttempt,
-      examAttemptDate: studentData.examAttemptDate,
-      testDate: studentData.testDate || new Date().toISOString().split('T')[0],
-      testStartTime: studentData.startTimeFormatted || '',
-      testEndTime: endTimeFormatted,
-      q1Answer: answers[0] || 'Unanswered',
-      q2Answer: answers[1] || 'Unanswered',
-      q3Answer: answers[2] || 'Unanswered',
-      q4Answer: answers[3] || 'Unanswered',
-      q5Answer: answers[4] || 'Unanswered',
-      correctAnswers: resultData.correctAnswers,
-      wrongAnswers: resultData.wrongAnswers,
-      score: resultData.score,
-      percentage: resultData.percentage,
-      totalTimeTaken: resultData.totalTimeTaken,
-      status: resultData.status
-    };
-
-    const success = await sendToGoogleSheets(payload);
-    if (success) {
-      const currentSaved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      currentSaved.submissionStatus = 'success';
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSaved));
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Header Bar */}
-      <Navbar
-        onOpenSheetsConfig={() => setIsSheetsModalOpen(true)}
-        scriptUrl={scriptUrl}
-      />
+      <Navbar />
 
       {/* Main Content Area */}
       <main className="flex-1 pb-12">
@@ -307,9 +238,6 @@ export default function App() {
           <ResultCard
             studentData={studentData}
             resultData={resultData}
-            submissionStatus={submissionStatus}
-            onRetrySubmission={handleRetrySubmission}
-            scriptUrl={scriptUrl}
           />
         )}
       </main>
@@ -321,14 +249,6 @@ export default function App() {
           <p className="font-medium text-slate-400">Single Public Student Link System</p>
         </div>
       </footer>
-
-      {/* Google Sheets Setup Modal */}
-      <GoogleSheetsModal
-        isOpen={isSheetsModalOpen}
-        onClose={() => setIsSheetsModalOpen(false)}
-        scriptUrl={scriptUrl}
-        onSaveScriptUrl={handleSaveScriptUrl}
-      />
     </div>
   );
 }
