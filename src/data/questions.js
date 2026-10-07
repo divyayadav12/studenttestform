@@ -65,5 +65,4 @@ export const TEST_QUESTIONS = [
 ];
 
 // Default Google Apps Script Web App Endpoint
-// Replace this URL with your deployed Google Apps Script Web App URL
-export const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_DEPLOYED_SCRIPT_ID_HERE/exec";
+export const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBPS13xmg5vc0124MvXlyNW3kP-9FyY3Ag8buSspAfz4idfgKPgzAFTQWwPLakdgsOPQ/exec";
