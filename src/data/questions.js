@@ -1,4 +1,4 @@
-// CA Final Questions - Updated per exact syllabus requirements
+// CA Foundation Questions - Updated with Sarthak Sir's exact corrections
 // Easily modify questions, options, and correct answers below.
 
 export const TEST_QUESTIONS = [
@@ -17,26 +17,26 @@ export const TEST_QUESTIONS = [
   {
     id: 2,
     subject: "Asset Classification & Accounting",
-    question: "A painting worth ₹ 16 Lakh is purchased for an office premises costing ₹ 7 Lakh. How should this expenditure be classified?",
+    question: "A small painting of a renowned artist is purchased for an office premises costing ₹ 7 Lakh. How should this expenditure be classified?",
     options: [
       { id: "A", text: "Revenue Expense" },
       { id: "B", text: "Tangible Asset" },
       { id: "C", text: "Intangible Asset" },
       { id: "D", text: "Deferred Revenue Expense" }
     ],
-    correctAnswer: "B"
+    correctAnswer: "C"
   },
   {
     id: 3,
-    subject: "Inventory & Fixed Asset Accounting",
+    subject: "Inventory & Fixed Asset / PPE Accounting",
     question: "Crockery used in a restaurant is classified under:",
     options: [
       { id: "A", text: "Spare Parts" },
       { id: "B", text: "Loose Tools" },
       { id: "C", text: "Inventory" },
-      { id: "D", text: "Fixed Assets" }
+      { id: "D", text: "Fixed Asset / PPEs" }
     ],
-    correctAnswer: "B"
+    correctAnswer: "D"
   },
   {
     id: 4,
@@ -46,21 +46,21 @@ export const TEST_QUESTIONS = [
       { id: "A", text: "Revenue Expense" },
       { id: "B", text: "Deferred Revenue Expense" },
       { id: "C", text: "Intangible Asset" },
-      { id: "D", text: "Capital Expense" }
+      { id: "D", text: "Deferred Capital Expenditure" }
     ],
-    correctAnswer: "A"
+    correctAnswer: "C"
   },
   {
     id: 5,
     subject: "Capital & Revenue Expenditure",
     question: "Glow Signboard bought for a showroom is classified as:",
     options: [
-      { id: "A", text: "Capital Expenditure" },
+      { id: "A", text: "Marketing Expenditure" },
       { id: "B", text: "Deferred Revenue Expenditure" },
-      { id: "C", text: "Intangible Asset" },
-      { id: "D", text: "Revenue Expenditure" }
+      { id: "C", text: "Revenue Expenditure" },
+      { id: "D", text: "Fixed Asset / PPE" }
     ],
-    correctAnswer: "A"
+    correctAnswer: "D"
   }
 ];
 
