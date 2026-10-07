@@ -22,24 +22,23 @@ export default function App() {
   const [testStartTime, setTestStartTime] = useState(null);
   const [resultData, setResultData] = useState(null);
 
-  // 1. Restore persistent state on mount
+  // 1. Restore persistent state on mount (only for mid-test progress)
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.submitted && parsed.resultData) {
-          setStudentData(parsed.studentData);
-          setAnswers(parsed.answers || {});
-          setResultData(parsed.resultData);
-          setStep('result');
-        } else if (parsed.step === 'test' && parsed.studentData) {
+        // Only restore if student was actively in the middle of a test
+        if (parsed.step === 'test' && parsed.studentData && !parsed.submitted) {
           setStudentData(parsed.studentData);
           setCurrentIndex(parsed.currentIndex || 0);
           setAnswers(parsed.answers || {});
           setTimeLeft(parsed.timeLeft || 60);
           setTestStartTime(parsed.testStartTime);
           setStep('test');
+        } else if (parsed.submitted) {
+          // If test was already completed, clear transient state so page reopens at registration
+          localStorage.removeItem(STORAGE_KEY);
         }
       }
     } catch (e) {
@@ -241,6 +240,17 @@ export default function App() {
     }
   };
 
+  // Reset state to allow a new candidate registration
+  const handleStartNewTest = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setStudentData(null);
+    setAnswers({});
+    setResultData(null);
+    setCurrentIndex(0);
+    setTimeLeft(60);
+    setStep('details');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Header Bar */}
@@ -272,6 +282,7 @@ export default function App() {
           <ResultCard
             studentData={studentData}
             resultData={resultData}
+            onStartNewTest={handleStartNewTest}
           />
         )}
       </main>

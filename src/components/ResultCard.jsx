@@ -10,12 +10,14 @@ import {
   Calendar,
   Award,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  RotateCcw
 } from 'lucide-react';
 
 export default function ResultCard({
   studentData,
-  resultData
+  resultData,
+  onStartNewTest
 }) {
   const { score, percentage, correctAnswers, wrongAnswers, totalTimeTaken, performanceMessage } = resultData;
 
@@ -37,11 +39,11 @@ export default function ResultCard({
   };
 
   return (
-    <div className="max-w-3xl mx-auto my-8 px-4">
+    <div className="max-w-3xl mx-auto my-6 sm:my-8 px-3 sm:px-4">
       <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
         
         {/* Result Header */}
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-900 text-white p-8 text-center relative overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-900 text-white p-6 sm:p-8 text-center relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col items-center">
@@ -61,11 +63,11 @@ export default function ResultCard({
         </div>
 
         {/* Student Information Bar */}
-        <div className="bg-slate-50 border-b border-slate-200 p-6">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
+        <div className="bg-slate-50 border-b border-slate-200 p-4 sm:p-6">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 sm:mb-4">
             Candidate Information
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
             <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
               <User className="w-5 h-5 text-indigo-600 shrink-0" />
               <div>
@@ -101,12 +103,12 @@ export default function ResultCard({
         </div>
 
         {/* Performance Score Grid */}
-        <div className="p-6 sm:p-8">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
+        <div className="p-4 sm:p-8">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 sm:mb-4">
             Test Performance Summary
           </h4>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
             {/* Score */}
             <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 text-center">
               <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider">Your Score</p>
@@ -145,20 +147,34 @@ export default function ResultCard({
           </div>
 
           {/* Time Taken Row */}
-          <div className="bg-slate-100/70 rounded-xl p-4 flex items-center justify-between text-sm">
+          <div className="bg-slate-100/70 rounded-xl p-4 flex items-center justify-between text-sm mb-6">
             <div className="flex items-center gap-2 text-slate-700 font-medium">
               <Clock className="w-4 h-4 text-indigo-600" />
               <span>Time Used:</span>
             </div>
             <span className="font-mono font-bold text-slate-900 text-base">{totalTimeTaken}</span>
           </div>
+
+          {/* New Registration Button */}
+          {onStartNewTest && (
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={onStartNewTest}
+                className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Register Another Candidate / Start New Test</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Security Notice Footer */}
         <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 text-center">
           <p className="text-xs text-slate-500 flex items-center justify-center gap-1 font-medium">
             <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
-            Duplicate submissions are disabled for this session. Your response is recorded.
+            Your test response has been recorded. Re-registration with the same email address is blocked.
           </p>
         </div>
       </div>
