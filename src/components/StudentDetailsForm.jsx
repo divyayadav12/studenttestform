@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { User, Mail, Calendar, Award, ArrowRight, Clock, ShieldAlert, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Mail, Calendar, Award, ArrowRight, Clock, ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const ATTEMPT_OPTIONS = [
   "September 2026",
@@ -36,35 +36,44 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     }
   };
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmailFormat = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const updatedForm = { ...formData, [name]: value };
+    setFormData(updatedForm);
 
-    // Check duplicate if email is being typed
+    const newErrors = { ...errors };
+
+    // Real-time email validation
     if (name === 'email') {
-      const duplicate = checkDuplicateEmail(value);
-      setIsDuplicateEmail(duplicate);
-      if (duplicate) {
-        setErrors(prev => ({
-          ...prev,
-          email: "This email address has already submitted the test. Multiple attempts are not allowed."
-        }));
-      } else if (errors.email) {
-        setErrors(prev => ({ ...prev, email: '' }));
+      const trimmedEmail = value.trim();
+      if (!trimmedEmail) {
+        newErrors.email = "Email address is required";
+        setIsDuplicateEmail(false);
+      } else if (!validateEmailFormat(trimmedEmail)) {
+        newErrors.email = "Invalid email format (e.g. name@domain.com)";
+        setIsDuplicateEmail(false);
+      } else if (checkDuplicateEmail(trimmedEmail)) {
+        newErrors.email = "This email is already registered! Multiple test attempts are not allowed.";
+        setIsDuplicateEmail(true);
+      } else {
+        delete newErrors.email;
+        setIsDuplicateEmail(false);
       }
-    } else if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+    } else {
+      if (newErrors[name]) delete newErrors[name];
     }
+
+    setErrors(newErrors);
   };
 
   const isFormValid = () => {
     return (
       formData.studentName.trim().length >= 2 &&
-      validateEmail(formData.email) &&
+      validateEmailFormat(formData.email) &&
       !isDuplicateEmail &&
       formData.caAttempt &&
       formData.examAttemptDate
@@ -78,12 +87,17 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     if (!formData.studentName.trim()) {
       newErrors.studentName = "Full name is required";
     }
-    if (!formData.email.trim() || !validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    } else if (checkDuplicateEmail(formData.email)) {
-      newErrors.email = "This email address has already submitted the test. Multiple attempts are not allowed.";
+    
+    const trimmedEmail = formData.email.trim();
+    if (!trimmedEmail) {
+      newErrors.email = "Email address is required";
+    } else if (!validateEmailFormat(trimmedEmail)) {
+      newErrors.email = "Invalid email format (e.g. name@domain.com)";
+    } else if (checkDuplicateEmail(trimmedEmail)) {
+      newErrors.email = "This email is already registered! Multiple test attempts are not allowed.";
       setIsDuplicateEmail(true);
     }
+
     if (!formData.caAttempt) {
       newErrors.caAttempt = "Please select your CA Final Attempt";
     }
@@ -98,6 +112,8 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
 
     onStartTest(formData);
   };
+
+  const isEmailValidAndFresh = formData.email.trim() && validateEmailFormat(formData.email) && !isDuplicateEmail;
 
   return (
     <div className="max-w-2xl mx-auto my-6 sm:my-8 px-3 sm:px-4">
@@ -126,16 +142,6 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
           </div>
         </div>
 
-        {/* Duplicate Email Warning Alert */}
-        {isDuplicateEmail && (
-          <div className="bg-rose-50 border-b border-rose-200 px-6 py-4 flex items-start gap-3 text-xs sm:text-sm text-rose-800">
-            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5 animate-bounce" />
-            <div>
-              <span className="font-bold">Already Registered:</span> This email ID (<span className="font-mono underline">{formData.email}</span>) has already completed the assessment. Duplicate registrations are not permitted.
-            </div>
-          </div>
-        )}
-
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
           {/* Student Name */}
@@ -162,7 +168,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
             </div>
             {errors.studentName && (
               <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                <ShieldAlert className="w-3.5 h-3.5" /> {errors.studentName}
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.studentName}
               </p>
             )}
           </div>
@@ -182,16 +188,34 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="rahul.sharma@example.com"
-                className={`w-full pl-11 pr-4 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 ${
+                className={`w-full pl-11 pr-10 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 ${
                   errors.email || isDuplicateEmail
                     ? 'border-rose-300 bg-rose-50/30 focus:ring-rose-500 focus:border-rose-500'
+                    : isEmailValidAndFresh
+                    ? 'border-emerald-300 bg-emerald-50/20 focus:ring-emerald-500 focus:border-emerald-500'
                     : 'border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-300'
                 }`}
               />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                {isEmailValidAndFresh && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+                {(errors.email || isDuplicateEmail) && <AlertTriangle className="w-5 h-5 text-rose-600" />}
+              </div>
             </div>
-            {errors.email && (
+
+            {/* Invalid or Duplicate Email Alert Banner */}
+            {isDuplicateEmail && (
+              <div className="mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5 animate-bounce" />
+                <div>
+                  <p className="font-bold">⚠️ Already Registered Email</p>
+                  <p className="mt-0.5">This email ID (<span className="font-mono font-semibold underline">{formData.email}</span>) has already completed the assessment. Duplicate submissions with the same email are blocked.</p>
+                </div>
+              </div>
+            )}
+
+            {!isDuplicateEmail && errors.email && (
               <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                <ShieldAlert className="w-3.5 h-3.5" /> {errors.email}
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.email}
               </p>
             )}
           </div>
@@ -224,7 +248,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
               </div>
               {errors.caAttempt && (
                 <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                  <ShieldAlert className="w-3.5 h-3.5" /> {errors.caAttempt}
+                  <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.caAttempt}
                 </p>
               )}
             </div>
@@ -252,7 +276,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
               </div>
               {errors.examAttemptDate && (
                 <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                  <ShieldAlert className="w-3.5 h-3.5" /> {errors.examAttemptDate}
+                  <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.examAttemptDate}
                 </p>
               )}
             </div>
@@ -275,8 +299,8 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
             {!isFormValid() && (
               <p className="text-center text-xs text-slate-400 mt-2">
                 {isDuplicateEmail
-                  ? '* This email has already submitted a response.'
-                  : '* Complete all required fields above to unlock the test.'}
+                  ? '⚠️ Duplicate registration detected for this email.'
+                  : '* Complete all required fields with a valid email address.'}
               </p>
             )}
           </div>
