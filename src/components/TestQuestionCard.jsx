@@ -15,6 +15,11 @@ export default function TestQuestionCard({
   const totalQuestions = questions.length;
   const isLastQuestion = currentIndex === totalQuestions - 1;
 
+  // Scroll to top immediately whenever current question changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [currentIndex]);
+
   // Countdown Timer Effect
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,13 +51,13 @@ export default function TestQuestionCard({
   const isLowTime = timeLeft <= 15;
 
   return (
-    <div className="max-w-3xl mx-auto my-6 px-4">
-      {/* Header Bar: Question Tracker & Prominent Timer */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-stretch">
+    <div className="max-w-3xl mx-auto my-4 sm:my-6 px-3 sm:px-4">
+      {/* Header Bar: Prominent Timer & Question Tracker */}
+      <div className="flex flex-col-reverse md:grid md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
         
         {/* Progress Tracker Card */}
-        <div className="md:col-span-2 bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
+        <div className="md:col-span-2 bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <span className="text-xs font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
               QUESTION {currentIndex + 1} OF {totalQuestions}
             </span>
@@ -64,7 +69,7 @@ export default function TestQuestionCard({
 
           {/* Progress Bar & Dots */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
               {Array.from({ length: totalQuestions }).map((_, idx) => (
                 <div
                   key={idx}
@@ -72,28 +77,28 @@ export default function TestQuestionCard({
                     idx === currentIndex
                       ? 'flex-1 bg-indigo-600'
                       : idx < currentIndex
-                      ? 'w-6 bg-emerald-500'
-                      : 'w-6 bg-slate-200'
+                      ? 'w-4 sm:w-6 bg-emerald-500'
+                      : 'w-4 sm:w-6 bg-slate-200'
                   }`}
                   title={`Question ${idx + 1}`}
                 />
               ))}
             </div>
             <p className="text-xs text-slate-500 font-medium">
-              Progress: <span className="font-bold text-slate-700">{currentIndex + 1}</span> of {totalQuestions} answered step-by-step
+              Progress: <span className="font-bold text-slate-700">{currentIndex + 1}</span> of {totalQuestions} answered
             </p>
           </div>
         </div>
 
-        {/* Prominent Timer Card */}
+        {/* Prominent Timer Card (Always visible on mobile top) */}
         <div
-          className={`rounded-2xl p-5 border shadow-sm transition-all duration-300 flex flex-col items-center justify-center text-center ${
+          className={`rounded-2xl p-4 sm:p-5 border shadow-sm transition-all duration-300 flex flex-col items-center justify-center text-center ${
             isLowTime
               ? 'bg-rose-50 border-rose-200 text-rose-900 animate-pulse-ring'
               : 'bg-indigo-900 border-indigo-800 text-white shadow-indigo-900/10'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest opacity-80 mb-1">
+          <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest opacity-90 mb-1">
             {isLowTime ? (
               <AlertTriangle className="w-4 h-4 text-rose-600 animate-bounce" />
             ) : (
@@ -106,7 +111,7 @@ export default function TestQuestionCard({
           }`}>
             {formatTime(timeLeft)}
           </div>
-          <p className="text-[11px] opacity-75 mt-1">
+          <p className="text-[11px] opacity-75 mt-0.5 sm:mt-1">
             1 min per question
           </p>
         </div>
@@ -114,14 +119,14 @@ export default function TestQuestionCard({
 
       {/* Question Card */}
       <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-        <div className="p-6 sm:p-8">
-          <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-6">
-            <span className="text-indigo-600 mr-2">Q{currentIndex + 1}.</span>
+        <div className="p-4 sm:p-8">
+          <h3 className="text-base sm:text-xl font-bold text-slate-900 leading-snug mb-5 sm:mb-6">
+            <span className="text-indigo-600 mr-1.5">Q{currentIndex + 1}.</span>
             {currentQuestion.question}
           </h3>
 
           {/* Options List */}
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {currentQuestion.options.map((opt) => {
               const isSelected = selectedAnswer === opt.id;
               return (
@@ -129,9 +134,9 @@ export default function TestQuestionCard({
                   key={opt.id}
                   type="button"
                   onClick={() => onSelectAnswer(opt.id)}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-4 group cursor-pointer ${
+                  className={`w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all flex items-start gap-3 sm:gap-4 group cursor-pointer active:scale-[0.99] ${
                     isSelected
-                      ? 'border-indigo-600 bg-indigo-50/50 shadow-md shadow-indigo-100'
+                      ? 'border-indigo-600 bg-indigo-50/60 shadow-md shadow-indigo-100'
                       : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/60 bg-white'
                   }`}
                 >
@@ -163,7 +168,7 @@ export default function TestQuestionCard({
         </div>
 
         {/* Card Footer: Action Button */}
-        <div className="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
+        <div className="bg-slate-50 border-t border-slate-100 px-4 sm:px-6 py-4 flex items-center justify-between">
           <span className="text-xs text-slate-500 font-medium hidden sm:inline">
             * Moving forward will submit your selection for this question.
           </span>
@@ -177,10 +182,10 @@ export default function TestQuestionCard({
                 onNextQuestion(false);
               }
             }}
-            className="w-full sm:w-auto ml-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+            className="w-full sm:w-auto ml-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
           >
             <span>{isLastQuestion ? 'Submit Test' : 'Next Question'}</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>

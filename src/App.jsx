@@ -47,7 +47,12 @@ export default function App() {
     }
   }, []);
 
-  // 2. Persist ongoing test state to localStorage to handle refresh seamlessly
+  // 2. Scroll to top on step or question index change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [step, currentIndex]);
+
+  // 3. Persist ongoing test state to localStorage to handle refresh seamlessly
   useEffect(() => {
     if (step === 'test' && studentData) {
       const stateToSave = {
