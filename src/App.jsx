@@ -282,7 +282,6 @@ export default function App() {
           <ResultCard
             studentData={studentData}
             resultData={resultData}
-            onStartNewTest={handleStartNewTest}
           />
         )}
       </main>

@@ -10,14 +10,12 @@ import {
   Calendar,
   Award,
   Sparkles,
-  AlertCircle,
-  RotateCcw
+  AlertCircle
 } from 'lucide-react';
 
 export default function ResultCard({
   studentData,
-  resultData,
-  onStartNewTest
+  resultData
 }) {
   const { score, percentage, correctAnswers, wrongAnswers, totalTimeTaken, performanceMessage } = resultData;
 
@@ -147,34 +145,20 @@ export default function ResultCard({
           </div>
 
           {/* Time Taken Row */}
-          <div className="bg-slate-100/70 rounded-xl p-4 flex items-center justify-between text-sm mb-6">
+          <div className="bg-slate-100/70 rounded-xl p-4 flex items-center justify-between text-sm">
             <div className="flex items-center gap-2 text-slate-700 font-medium">
               <Clock className="w-4 h-4 text-indigo-600" />
               <span>Time Used:</span>
             </div>
             <span className="font-mono font-bold text-slate-900 text-base">{totalTimeTaken}</span>
           </div>
-
-          {/* New Registration Button */}
-          {onStartNewTest && (
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={onStartNewTest}
-                className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
-              >
-                <RotateCcw className="w-5 h-5" />
-                <span>Register Another Candidate / Start New Test</span>
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Security Notice Footer */}
         <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 text-center">
           <p className="text-xs text-slate-500 flex items-center justify-center gap-1 font-medium">
             <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
-            Your test response has been recorded. Re-registration with the same email address is blocked.
+            Your test response has been recorded. Duplicate submissions with the same email address are blocked.
           </p>
         </div>
       </div>
