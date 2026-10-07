@@ -66,20 +66,33 @@ export default function App() {
   // Silent background transmission to Google Sheets Apps Script API
   const sendToGoogleSheets = async (payload) => {
     if (!scriptUrl || scriptUrl.includes('YOUR_DEPLOYED_SCRIPT_ID')) {
-      console.log("Apps Script Web App URL not yet configured in src/data/questions.js");
+      console.log("Apps Script Web App URL not configured");
       return;
     }
 
     try {
+      const dataString = JSON.stringify(payload);
+      
+      // Send using fetch with mode 'no-cors' to prevent CORS preflight blocks
       await fetch(scriptUrl, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'text/plain;charset=utf-8',
         },
-        body: JSON.stringify(payload),
+        body: dataString,
       });
     } catch (err) {
       console.error("Background Google Sheets push error:", err);
+      // Fallback: sendBeacon
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=utf-8' });
+          navigator.sendBeacon(scriptUrl, blob);
+        }
+      } catch (e) {
+        console.error("sendBeacon fallback error:", e);
+      }
     }
   };
 
