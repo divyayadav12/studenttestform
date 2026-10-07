@@ -1,68 +1,68 @@
-// CA Final Sample Questions
-// You can easily modify questions, options, and correct answers below.
+// CA Final Questions - Updated per exact syllabus requirements
+// Easily modify questions, options, and correct answers below.
 
 export const TEST_QUESTIONS = [
   {
     id: 1,
-    subject: "Financial Reporting (Ind AS)",
-    question: "Under Ind AS 115 (Revenue from Contracts with Customers), when should revenue be recognized over time?",
+    subject: "Partnership & Financial Accounting",
+    question: "A partnership firm runs a beauty parlor and a partner avails makeup services for ₹ 2,000 involving cosmetics costing ₹ 200. What should be credited?",
     options: [
-      { id: "A", text: "When the customer simultaneously receives and consumes the benefits provided by the entity's performance as the entity performs." },
-      { id: "B", text: "Only when the physical delivery of goods is completed and invoice is generated." },
-      { id: "C", text: "When payment is received in advance from the customer." },
-      { id: "D", text: "At the discretion of the Board of Directors at the end of the financial year." }
+      { id: "A", text: "Sales ₹ 200" },
+      { id: "B", text: "Purchase ₹ 800" },
+      { id: "C", text: "Sales ₹ 800" },
+      { id: "D", text: "Purchase ₹ 200" }
     ],
-    correctAnswer: "A"
+    correctAnswer: "D"
   },
   {
     id: 2,
-    subject: "Advanced Auditing & Professional Ethics",
-    question: "According to SA 701 (Communicating Key Audit Matters in the Independent Auditor's Report), Key Audit Matters (KAM) are selected from:",
+    subject: "Asset Classification & Accounting",
+    question: "A painting worth ₹ 16 Lakh is purchased for an office premises costing ₹ 7 Lakh. How should this expenditure be classified?",
     options: [
-      { id: "A", text: "All matters discussed with the audit committee during the year." },
-      { id: "B", text: "Matters communicated with those charged with governance that required significant auditor attention." },
-      { id: "C", text: "Only matters that result in a modified audit opinion." },
-      { id: "D", text: "Matters reported by internal auditors in their quarterly report." }
+      { id: "A", text: "Revenue Expense" },
+      { id: "B", text: "Tangible Asset" },
+      { id: "C", text: "Intangible Asset" },
+      { id: "D", text: "Deferred Revenue Expense" }
     ],
     correctAnswer: "B"
   },
   {
     id: 3,
-    subject: "Direct Tax Laws & International Taxation",
-    question: "Under Section 194R of the Income Tax Act, 1961, TDS @ 10% is required to be deducted on providing any benefit or perquisite arising from business or profession if the aggregate value exceeds:",
+    subject: "Inventory & Fixed Asset Accounting",
+    question: "Crockery used in a restaurant is classified under:",
     options: [
-      { id: "A", text: "₹ 10,000 in a financial year" },
-      { id: "B", text: "₹ 20,000 in a financial year" },
-      { id: "C", text: "₹ 50,000 in a financial year" },
-      { id: "D", text: "₹ 1,000,000 in a financial year" }
+      { id: "A", text: "Spare Parts" },
+      { id: "B", text: "Loose Tools" },
+      { id: "C", text: "Inventory" },
+      { id: "D", text: "Fixed Assets" }
     ],
     correctAnswer: "B"
   },
   {
     id: 4,
-    subject: "Corporate & Economic Laws",
-    question: "Under the Companies Act, 2013, what is the minimum threshold of paid-up share capital for a public company to mandatorily appoint a Whole-time Key Managerial Personnel (KMP)?",
+    subject: "Expenditure Classification",
+    question: "₹ 100 Crore paid to Ranveer Singh for acting in movie 'Dhurandhar' is classified as:",
     options: [
-      { id: "A", text: "₹ 5 Crore or more" },
-      { id: "B", text: "₹ 10 Crore or more" },
-      { id: "C", text: "₹ 25 Crore or more" },
-      { id: "D", text: "₹ 50 Crore or more" }
+      { id: "A", text: "Revenue Expense" },
+      { id: "B", text: "Deferred Revenue Expense" },
+      { id: "C", text: "Intangible Asset" },
+      { id: "D", text: "Capital Expense" }
     ],
-    correctAnswer: "B"
+    correctAnswer: "A"
   },
   {
     id: 5,
-    subject: "Strategic Financial Management (AFM)",
-    question: "In Capital Asset Pricing Model (CAPM), if Beta (β) of a stock is 1.2, Risk-Free Rate is 6%, and Expected Market Return is 14%, what is the Required Rate of Return?",
+    subject: "Capital & Revenue Expenditure",
+    question: "Glow Signboard bought for a showroom is classified as:",
     options: [
-      { id: "A", text: "15.6%" },
-      { id: "B", text: "16.8%" },
-      { id: "C", text: "14.4%" },
-      { id: "D", text: "12.0%" }
+      { id: "A", text: "Capital Expenditure" },
+      { id: "B", text: "Deferred Revenue Expenditure" },
+      { id: "C", text: "Intangible Asset" },
+      { id: "D", text: "Revenue Expenditure" }
     ],
     correctAnswer: "A"
   }
 ];
 
-// Default Google Apps Script Web App Endpoint
+// Active Google Apps Script Web App Endpoint
 export const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycH9TXySzZ7TxXArw3HyrGC7_GM6zVEzbrPPOXSbAToLyVcGgNrmv-oauii2d71Vp8TQ/exec";

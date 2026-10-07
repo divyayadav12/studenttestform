@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Clock, ArrowRight, CheckCircle2, AlertTriangle, BookOpen } from 'lucide-react';
+import { Clock, ArrowRight, CheckCircle2, AlertTriangle, BookOpen, ShieldAlert } from 'lucide-react';
 
 export default function TestQuestionCard({
   questions,
@@ -20,17 +20,54 @@ export default function TestQuestionCard({
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [currentIndex]);
 
+  // Anti-Cheating & Copy Prevention (Disable Right Click, Copy, Shortcuts)
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const handleCopy = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const handleKeyDown = (e) => {
+      // Block Ctrl+C, Ctrl+U, Ctrl+A, Ctrl+S, F12, Ctrl+Shift+I
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        ['c', 'u', 'a', 's', 'p'].includes(e.key.toLowerCase())
+      ) {
+        e.preventDefault();
+        return false;
+      }
+      if (e.key === 'F12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'i')) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('copy', handleCopy);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('copy', handleCopy);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   // Countdown Timer Effect
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          // Auto advance when time runs out
           if (isLastQuestion) {
-            onSubmitTest(true); // triggered by timer expiry
+            onSubmitTest(true);
           } else {
-            onNextQuestion(true); // triggered by timer expiry
+            onNextQuestion(true);
           }
           return 60;
         }
@@ -51,7 +88,27 @@ export default function TestQuestionCard({
   const isLowTime = timeLeft <= 15;
 
   return (
-    <div className="max-w-3xl mx-auto my-4 sm:my-6 px-3 sm:px-4">
+    <div 
+      className="max-w-3xl mx-auto my-4 sm:my-6 px-3 sm:px-4 select-none"
+      onContextMenu={(e) => e.preventDefault()}
+      onCopy={(e) => e.preventDefault()}
+      onCut={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
+      style={{
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none',
+        userSelect: 'none'
+      }}
+    >
+      {/* Anti-Cheating Warning Tag */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 mb-3 flex items-center justify-between text-xs text-amber-800">
+        <span className="flex items-center gap-1.5 font-semibold">
+          <ShieldAlert className="w-4 h-4 text-amber-600" />
+          Proctored Mode: Copying & Right-Click are disabled to ensure test integrity.
+        </span>
+      </div>
+
       {/* Header Bar: Prominent Timer & Question Tracker */}
       <div className="flex flex-col-reverse md:grid md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
         
