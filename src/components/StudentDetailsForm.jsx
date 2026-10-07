@@ -1,43 +1,41 @@
 import React, { useState } from 'react';
-import { User, Mail, Calendar, Award, ArrowRight, Clock, ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { User, Phone, Award, ArrowRight, Clock, ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const ATTEMPT_OPTIONS = [
-  "May 2026",
-  "September 2026",
   "January 2027",
   "May 2027",
+  "September 2027",
   "Other"
 ];
 
-const SUBMITTED_EMAILS_KEY = 'ca_final_submitted_emails_v1';
+const SUBMITTED_PHONES_KEY = 'ca_final_submitted_phones_v1';
 
 export default function StudentDetailsForm({ onStartTest, initialData }) {
   const [formData, setFormData] = useState(initialData || {
     studentName: '',
-    email: '',
-    caAttempt: 'May 2026',
-    examAttemptDate: ''
+    phone: '',
+    caAttempt: 'January 2027'
   });
 
   const [errors, setErrors] = useState({});
-  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
+  const [isDuplicatePhone, setIsDuplicatePhone] = useState(false);
 
-  // Check duplicate email against local storage records
-  const checkDuplicateEmail = (emailVal) => {
-    if (!emailVal || !emailVal.trim()) return false;
+  // Check duplicate phone against local storage records
+  const checkDuplicatePhone = (phoneVal) => {
+    if (!phoneVal || !phoneVal.trim()) return false;
     try {
-      const stored = localStorage.getItem(SUBMITTED_EMAILS_KEY);
-      const emailList = stored ? JSON.parse(stored) : [];
-      const cleanEmail = emailVal.trim().toLowerCase();
-      return emailList.some(e => e.trim().toLowerCase() === cleanEmail);
+      const stored = localStorage.getItem(SUBMITTED_PHONES_KEY);
+      const phoneList = stored ? JSON.parse(stored) : [];
+      const cleanPhone = phoneVal.trim();
+      return phoneList.some(p => p.trim() === cleanPhone);
     } catch (err) {
-      console.error("Error reading submitted emails", err);
+      console.error("Error reading submitted phones", err);
       return false;
     }
   };
 
-  const validateEmailFormat = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const validatePhoneFormat = (phone) => {
+    return /^[6-9]\d{9}$/.test(phone.trim()) || /^\d{10}$/.test(phone.trim());
   };
 
   const handleChange = (e) => {
@@ -47,21 +45,21 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
 
     const newErrors = { ...errors };
 
-    // Real-time email validation
-    if (name === 'email') {
-      const trimmedEmail = value.trim();
-      if (!trimmedEmail) {
-        newErrors.email = "Email address is required";
-        setIsDuplicateEmail(false);
-      } else if (!validateEmailFormat(trimmedEmail)) {
-        newErrors.email = "Invalid email format (e.g. name@domain.com)";
-        setIsDuplicateEmail(false);
-      } else if (checkDuplicateEmail(trimmedEmail)) {
-        newErrors.email = "This email is already registered! Multiple test attempts are not allowed.";
-        setIsDuplicateEmail(true);
+    // Real-time phone validation
+    if (name === 'phone') {
+      const trimmedPhone = value.trim();
+      if (!trimmedPhone) {
+        newErrors.phone = "Mobile Number is required";
+        setIsDuplicatePhone(false);
+      } else if (!validatePhoneFormat(trimmedPhone)) {
+        newErrors.phone = "Please enter a valid 10-digit mobile number";
+        setIsDuplicatePhone(false);
+      } else if (checkDuplicatePhone(trimmedPhone)) {
+        newErrors.phone = "This mobile number is already registered! Multiple test attempts are not allowed.";
+        setIsDuplicatePhone(true);
       } else {
-        delete newErrors.email;
-        setIsDuplicateEmail(false);
+        delete newErrors.phone;
+        setIsDuplicatePhone(false);
       }
     } else {
       if (newErrors[name]) delete newErrors[name];
@@ -73,10 +71,9 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
   const isFormValid = () => {
     return (
       formData.studentName.trim().length >= 2 &&
-      validateEmailFormat(formData.email) &&
-      !isDuplicateEmail &&
-      formData.caAttempt &&
-      formData.examAttemptDate
+      validatePhoneFormat(formData.phone) &&
+      !isDuplicatePhone &&
+      formData.caAttempt
     );
   };
 
@@ -88,21 +85,18 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
       newErrors.studentName = "Full name is required";
     }
     
-    const trimmedEmail = formData.email.trim();
-    if (!trimmedEmail) {
-      newErrors.email = "Email address is required";
-    } else if (!validateEmailFormat(trimmedEmail)) {
-      newErrors.email = "Invalid email format (e.g. name@domain.com)";
-    } else if (checkDuplicateEmail(trimmedEmail)) {
-      newErrors.email = "This email is already registered! Multiple test attempts are not allowed.";
-      setIsDuplicateEmail(true);
+    const trimmedPhone = formData.phone.trim();
+    if (!trimmedPhone) {
+      newErrors.phone = "Mobile number is required";
+    } else if (!validatePhoneFormat(trimmedPhone)) {
+      newErrors.phone = "Please enter a valid 10-digit mobile number";
+    } else if (checkDuplicatePhone(trimmedPhone)) {
+      newErrors.phone = "This mobile number is already registered! Multiple test attempts are not allowed.";
+      setIsDuplicatePhone(true);
     }
 
     if (!formData.caAttempt) {
       newErrors.caAttempt = "Please select your CA Foundation Attempt";
-    }
-    if (!formData.examAttemptDate) {
-      newErrors.examAttemptDate = "Please pick your Exam Attempt Date";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -113,7 +107,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     onStartTest(formData);
   };
 
-  const isEmailValidAndFresh = formData.email.trim() && validateEmailFormat(formData.email) && !isDuplicateEmail;
+  const isPhoneValidAndFresh = formData.phone.trim() && validatePhoneFormat(formData.phone) && !isDuplicatePhone;
 
   return (
     <div className="max-w-2xl mx-auto my-6 sm:my-8 px-3 sm:px-4">
@@ -173,113 +167,83 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
             )}
           </div>
 
-          {/* Email Address */}
+          {/* Mobile Number */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Email Address <span className="text-rose-500">*</span>
+              Mobile Number <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Mail className="w-5 h-5" />
+                <Phone className="w-5 h-5" />
               </div>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="tel"
+                name="phone"
+                maxLength={10}
+                value={formData.phone}
                 onChange={handleChange}
-                placeholder="rahul.sharma@example.com"
+                placeholder="e.g. 9876543210"
                 className={`w-full pl-11 pr-10 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 ${
-                  errors.email || isDuplicateEmail
+                  errors.phone || isDuplicatePhone
                     ? 'border-rose-300 bg-rose-50/30 focus:ring-rose-500 focus:border-rose-500'
-                    : isEmailValidAndFresh
+                    : isPhoneValidAndFresh
                     ? 'border-emerald-300 bg-emerald-50/20 focus:ring-emerald-500 focus:border-emerald-500'
                     : 'border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-300'
                 }`}
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                {isEmailValidAndFresh && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-                {(errors.email || isDuplicateEmail) && <AlertTriangle className="w-5 h-5 text-rose-600" />}
+                {isPhoneValidAndFresh && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+                {(errors.phone || isDuplicatePhone) && <AlertTriangle className="w-5 h-5 text-rose-600" />}
               </div>
             </div>
 
-            {/* Invalid or Duplicate Email Alert Banner */}
-            {isDuplicateEmail && (
+            {/* Invalid or Duplicate Phone Alert Banner */}
+            {isDuplicatePhone && (
               <div className="mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5 animate-bounce" />
                 <div>
-                  <p className="font-bold">⚠️ Already Registered Email</p>
-                  <p className="mt-0.5">This email ID (<span className="font-mono font-semibold underline">{formData.email}</span>) has already completed the assessment. Duplicate submissions with the same email are blocked.</p>
+                  <p className="font-bold">⚠️ Already Registered Mobile Number</p>
+                  <p className="mt-0.5">This mobile number (<span className="font-mono font-semibold underline">{formData.phone}</span>) has already completed the assessment. Duplicate submissions with the same mobile number are blocked.</p>
                 </div>
               </div>
             )}
 
-            {!isDuplicateEmail && errors.email && (
+            {!isDuplicatePhone && errors.phone && (
               <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.email}
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.phone}
               </p>
             )}
           </div>
 
-          {/* Grid for Attempt Dropdown & Date Picker */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* CA Foundation Attempt */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                CA Foundation Attempt <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Award className="w-5 h-5" />
-                </div>
-                <select
-                  name="caAttempt"
-                  value={formData.caAttempt}
-                  onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 bg-white ${
-                    errors.caAttempt
-                      ? 'border-rose-300 bg-rose-50/30 focus:ring-rose-500 focus:border-rose-500'
-                      : 'border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-300'
-                  }`}
-                >
-                  {ATTEMPT_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
+          {/* CA Foundation Attempt Dropdown */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              CA Foundation Attempt <span className="text-rose-500">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <Award className="w-5 h-5" />
               </div>
-              {errors.caAttempt && (
-                <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                  <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.caAttempt}
-                </p>
-              )}
+              <select
+                name="caAttempt"
+                value={formData.caAttempt}
+                onChange={handleChange}
+                className={`w-full pl-11 pr-4 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 bg-white ${
+                  errors.caAttempt
+                    ? 'border-rose-300 bg-rose-50/30 focus:ring-rose-500 focus:border-rose-500'
+                    : 'border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-300'
+                }`}
+              >
+                {ATTEMPT_OPTIONS.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
             </div>
-
-            {/* Exam Attempt Date */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Exam Attempt Date <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <input
-                  type="date"
-                  name="examAttemptDate"
-                  value={formData.examAttemptDate}
-                  onChange={handleChange}
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 bg-white ${
-                    errors.examAttemptDate
-                      ? 'border-rose-300 bg-rose-50/30 focus:ring-rose-500 focus:border-rose-500'
-                      : 'border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-300'
-                  }`}
-                />
-              </div>
-              {errors.examAttemptDate && (
-                <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
-                  <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.examAttemptDate}
-                </p>
-              )}
-            </div>
+            {errors.caAttempt && (
+              <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> {errors.caAttempt}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -298,9 +262,9 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
             </button>
             {!isFormValid() && (
               <p className="text-center text-xs text-slate-400 mt-2">
-                {isDuplicateEmail
-                  ? '⚠️ Duplicate registration detected for this email.'
-                  : '* Complete all required fields with a valid email address.'}
+                {isDuplicatePhone
+                  ? '⚠️ Duplicate registration detected for this mobile number.'
+                  : '* Complete all required fields with a valid 10-digit mobile number.'}
               </p>
             )}
           </div>

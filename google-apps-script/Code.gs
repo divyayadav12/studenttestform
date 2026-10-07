@@ -1,13 +1,12 @@
 /**
- * CA FINAL STUDENT ONLINE TEST FORM - GOOGLE APPS SCRIPT BACKEND
+ * CA FOUNDATION STUDENT ONLINE TEST FORM - GOOGLE APPS SCRIPT BACKEND
  */
 
 function setupSheetHeaders(sheet) {
   var headers = [
     "Student Name",
-    "Email",
-    "CA Final Attempt",
-    "Exam Attempt Date",
+    "Mobile Number",
+    "CA Foundation Attempt",
     "Test Date",
     "Test Start Time",
     "Test End Time",
@@ -35,17 +34,17 @@ function setupSheetHeaders(sheet) {
   }
 }
 
-function isEmailAlreadySubmitted(sheet, email) {
-  if (!email) return false;
+function isPhoneAlreadySubmitted(sheet, phone) {
+  if (!phone) return false;
   var lastRow = sheet.getLastRow();
   if (lastRow <= 1) return false;
   
-  // Email is in Column B (index 2)
-  var emailValues = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
-  var targetEmail = email.toString().trim().toLowerCase();
+  // Mobile Number is in Column B (index 2)
+  var phoneValues = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  var targetPhone = phone.toString().trim();
   
-  for (var i = 0; i < emailValues.length; i++) {
-    if (emailValues[i][0] && emailValues[i][0].toString().trim().toLowerCase() === targetEmail) {
+  for (var i = 0; i < phoneValues.length; i++) {
+    if (phoneValues[i][0] && phoneValues[i][0].toString().trim() === targetPhone) {
       return true;
     }
   }
@@ -69,20 +68,19 @@ function doPost(e) {
       throw new Error("No data received");
     }
 
-    var studentEmail = data.email || "";
+    var studentPhone = data.phone || data.mobile || data.email || "";
 
-    // Prevent duplicate email recording in Google Sheet
-    if (studentEmail && isEmailAlreadySubmitted(sheet, studentEmail)) {
+    // Prevent duplicate mobile number recording in Google Sheet
+    if (studentPhone && isPhoneAlreadySubmitted(sheet, studentPhone)) {
       return ContentService
-        .createTextOutput(JSON.stringify({ result: "duplicate", message: "Email already registered in Google Sheet" }))
+        .createTextOutput(JSON.stringify({ result: "duplicate", message: "Mobile number already registered in Google Sheet" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     var row = [
       data.studentName || "",
-      studentEmail,
+      studentPhone,
       data.caAttempt || "",
-      data.examAttemptDate || "",
       data.testDate || "",
       data.testStartTime || "",
       data.testEndTime || "",
@@ -116,6 +114,6 @@ function doPost(e) {
 
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({ result: "active", message: "CA Final Test Apps Script API Live" }))
+    .createTextOutput(JSON.stringify({ result: "active", message: "CA Foundation Test Apps Script API Live" }))
     .setMimeType(ContentService.MimeType.JSON);
 }

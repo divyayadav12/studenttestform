@@ -6,8 +6,7 @@ import {
   XCircle,
   Clock,
   User,
-  Mail,
-  Calendar,
+  Phone,
   Award,
   Sparkles,
   AlertCircle
@@ -65,7 +64,7 @@ export default function ResultCard({
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 sm:mb-4">
             Candidate Information
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-sm">
             <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
               <User className="w-5 h-5 text-indigo-600 shrink-0" />
               <div>
@@ -75,10 +74,10 @@ export default function ResultCard({
             </div>
 
             <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
-              <Mail className="w-5 h-5 text-indigo-600 shrink-0" />
+              <Phone className="w-5 h-5 text-indigo-600 shrink-0" />
               <div className="overflow-hidden">
-                <p className="text-xs text-slate-500 font-medium">Email Address</p>
-                <p className="font-bold text-slate-800 truncate">{studentData.email}</p>
+                <p className="text-xs text-slate-500 font-medium">Mobile Number</p>
+                <p className="font-bold text-slate-800 font-mono">{studentData.phone}</p>
               </div>
             </div>
 
@@ -87,14 +86,6 @@ export default function ResultCard({
               <div>
                 <p className="text-xs text-slate-500 font-medium">CA Foundation Attempt</p>
                 <p className="font-bold text-slate-800">{studentData.caAttempt}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
-              <Calendar className="w-5 h-5 text-indigo-600 shrink-0" />
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Exam Attempt Date</p>
-                <p className="font-bold text-slate-800">{studentData.examAttemptDate}</p>
               </div>
             </div>
           </div>
@@ -158,7 +149,7 @@ export default function ResultCard({
         <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 text-center">
           <p className="text-xs text-slate-500 flex items-center justify-center gap-1 font-medium">
             <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
-            Your test response has been recorded. Duplicate submissions with the same email address are blocked.
+            Your test response has been recorded. Duplicate submissions with the same mobile number are blocked.
           </p>
         </div>
       </div>

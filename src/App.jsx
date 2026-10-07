@@ -181,9 +181,8 @@ export default function App() {
 
     const payload = {
       studentName: studentData?.studentName || '',
-      email: studentData?.email || '',
+      phone: studentData?.phone || '',
       caAttempt: studentData?.caAttempt || '',
-      examAttemptDate: studentData?.examAttemptDate || '',
       testDate: studentData?.testDate || new Date().toISOString().split('T')[0],
       testStartTime: studentData?.startTimeFormatted || '',
       testEndTime: endTimeFormatted,
@@ -203,19 +202,19 @@ export default function App() {
     // Silent background transmission to Google Sheets
     sendToGoogleSheets(payload);
 
-    // Save submitted email to local list of registered emails to prevent re-registration
-    if (studentData?.email) {
+    // Save submitted phone number to local list of registered phones to prevent re-registration
+    if (studentData?.phone) {
       try {
-        const SUBMITTED_EMAILS_KEY = 'ca_final_submitted_emails_v1';
-        const existing = localStorage.getItem(SUBMITTED_EMAILS_KEY);
-        const emailList = existing ? JSON.parse(existing) : [];
-        const cleanEmail = studentData.email.trim().toLowerCase();
-        if (!emailList.includes(cleanEmail)) {
-          emailList.push(cleanEmail);
-          localStorage.setItem(SUBMITTED_EMAILS_KEY, JSON.stringify(emailList));
+        const SUBMITTED_PHONES_KEY = 'ca_final_submitted_phones_v1';
+        const existing = localStorage.getItem(SUBMITTED_PHONES_KEY);
+        const phoneList = existing ? JSON.parse(existing) : [];
+        const cleanPhone = studentData.phone.trim();
+        if (!phoneList.includes(cleanPhone)) {
+          phoneList.push(cleanPhone);
+          localStorage.setItem(SUBMITTED_PHONES_KEY, JSON.stringify(phoneList));
         }
       } catch (err) {
-        console.error("Error saving submitted email", err);
+        console.error("Error saving submitted phone", err);
       }
     }
 
