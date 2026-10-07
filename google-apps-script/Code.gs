@@ -1,18 +1,5 @@
 /**
  * CA FINAL STUDENT ONLINE TEST FORM - GOOGLE APPS SCRIPT BACKEND
- * 
- * SETUP INSTRUCTIONS:
- * 1. Open Google Sheets (https://sheets.new)
- * 2. Rename sheet to "Student Test Results" (optional)
- * 3. Go to Extensions -> Apps Script
- * 4. Replace all contents in Editor with this Code.gs script.
- * 5. Click "Deploy" -> "New Deployment"
- * 6. Select type: "Web app"
- * 7. Set Description: "CA Final Test Handler"
- * 8. Set Execute as: "Me"
- * 9. Set Who has access: "Anyone" (IMPORTANT!)
- * 10. Click "Deploy", authorize permissions, and copy the Web App URL.
- * 11. Paste the Web App URL into src/data/questions.js (or configure in the test form UI).
  */
 
 function setupSheetHeaders(sheet) {
@@ -48,9 +35,25 @@ function setupSheetHeaders(sheet) {
   }
 }
 
+function isEmailAlreadySubmitted(sheet, email) {
+  if (!email) return false;
+  var lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return false;
+  
+  // Email is in Column B (index 2)
+  var emailValues = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  var targetEmail = email.toString().trim().toLowerCase();
+  
+  for (var i = 0; i < emailValues.length; i++) {
+    if (emailValues[i][0] && emailValues[i][0].toString().trim().toLowerCase() === targetEmail) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  // Wait up to 10 seconds for concurrent writes
   lock.tryLock(10000);
 
   try {
@@ -66,9 +69,18 @@ function doPost(e) {
       throw new Error("No data received");
     }
 
+    var studentEmail = data.email || "";
+
+    // Prevent duplicate email recording in Google Sheet
+    if (studentEmail && isEmailAlreadySubmitted(sheet, studentEmail)) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: "duplicate", message: "Email already registered in Google Sheet" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     var row = [
       data.studentName || "",
-      data.email || "",
+      studentEmail,
       data.caAttempt || "",
       data.examAttemptDate || "",
       data.testDate || "",
@@ -104,6 +116,6 @@ function doPost(e) {
 
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({ result: "active", message: "CA Final Test Apps Script Backend API is live." }))
+    .createTextOutput(JSON.stringify({ result: "active", message: "CA Final Test Apps Script API Live" }))
     .setMimeType(ContentService.MimeType.JSON);
 }

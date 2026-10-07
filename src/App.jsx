@@ -204,6 +204,22 @@ export default function App() {
     // Silent background transmission to Google Sheets
     sendToGoogleSheets(payload);
 
+    // Save submitted email to local list of registered emails to prevent re-registration
+    if (studentData?.email) {
+      try {
+        const SUBMITTED_EMAILS_KEY = 'ca_final_submitted_emails_v1';
+        const existing = localStorage.getItem(SUBMITTED_EMAILS_KEY);
+        const emailList = existing ? JSON.parse(existing) : [];
+        const cleanEmail = studentData.email.trim().toLowerCase();
+        if (!emailList.includes(cleanEmail)) {
+          emailList.push(cleanEmail);
+          localStorage.setItem(SUBMITTED_EMAILS_KEY, JSON.stringify(emailList));
+        }
+      } catch (err) {
+        console.error("Error saving submitted email", err);
+      }
+    }
+
     // Persist final submission state in localStorage to block retaking
     const finalSavedState = {
       step: 'result',

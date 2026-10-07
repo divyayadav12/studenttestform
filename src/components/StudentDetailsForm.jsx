@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, Mail, Calendar, Award, ArrowRight, Clock, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Calendar, Award, ArrowRight, Clock, ShieldAlert, AlertTriangle } from 'lucide-react';
 
 const ATTEMPT_OPTIONS = [
   "September 2026",
@@ -8,6 +8,8 @@ const ATTEMPT_OPTIONS = [
   "September 2027",
   "Other"
 ];
+
+const SUBMITTED_EMAILS_KEY = 'ca_final_submitted_emails_v1';
 
 export default function StudentDetailsForm({ onStartTest, initialData }) {
   const [formData, setFormData] = useState(initialData || {
@@ -18,6 +20,21 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
+
+  // Check duplicate email against local storage records
+  const checkDuplicateEmail = (emailVal) => {
+    if (!emailVal || !emailVal.trim()) return false;
+    try {
+      const stored = localStorage.getItem(SUBMITTED_EMAILS_KEY);
+      const emailList = stored ? JSON.parse(stored) : [];
+      const cleanEmail = emailVal.trim().toLowerCase();
+      return emailList.some(e => e.trim().toLowerCase() === cleanEmail);
+    } catch (err) {
+      console.error("Error reading submitted emails", err);
+      return false;
+    }
+  };
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -27,8 +44,19 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    // Real-time error clearing
-    if (errors[name]) {
+    // Check duplicate if email is being typed
+    if (name === 'email') {
+      const duplicate = checkDuplicateEmail(value);
+      setIsDuplicateEmail(duplicate);
+      if (duplicate) {
+        setErrors(prev => ({
+          ...prev,
+          email: "This email address has already submitted the test. Multiple attempts are not allowed."
+        }));
+      } else if (errors.email) {
+        setErrors(prev => ({ ...prev, email: '' }));
+      }
+    } else if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
@@ -37,6 +65,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     return (
       formData.studentName.trim().length >= 2 &&
       validateEmail(formData.email) &&
+      !isDuplicateEmail &&
       formData.caAttempt &&
       formData.examAttemptDate
     );
@@ -51,6 +80,9 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
     }
     if (!formData.email.trim() || !validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email address";
+    } else if (checkDuplicateEmail(formData.email)) {
+      newErrors.email = "This email address has already submitted the test. Multiple attempts are not allowed.";
+      setIsDuplicateEmail(true);
     }
     if (!formData.caAttempt) {
       newErrors.caAttempt = "Please select your CA Final Attempt";
@@ -68,7 +100,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto my-8 px-4">
+    <div className="max-w-2xl mx-auto my-6 sm:my-8 px-3 sm:px-4">
       <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
         {/* Card Header */}
         <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-900 text-white p-6 sm:p-8 relative overflow-hidden">
@@ -93,6 +125,16 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
             <span className="font-semibold text-slate-800">Test Rules:</span> 5 MCQs total. Each question has a strict <span className="font-semibold text-indigo-600">1-minute timer</span> (5 mins total). Once time expires or you click Next, you cannot return to previous questions.
           </div>
         </div>
+
+        {/* Duplicate Email Warning Alert */}
+        {isDuplicateEmail && (
+          <div className="bg-rose-50 border-b border-rose-200 px-6 py-4 flex items-start gap-3 text-xs sm:text-sm text-rose-800">
+            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5 animate-bounce" />
+            <div>
+              <span className="font-bold">Already Registered:</span> This email ID (<span className="font-mono underline">{formData.email}</span>) has already completed the assessment. Duplicate registrations are not permitted.
+            </div>
+          </div>
+        )}
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
@@ -141,7 +183,7 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
                 onChange={handleChange}
                 placeholder="rahul.sharma@example.com"
                 className={`w-full pl-11 pr-4 py-3 rounded-xl border text-sm font-medium transition-all focus:outline-none focus:ring-2 ${
-                  errors.email
+                  errors.email || isDuplicateEmail
                     ? 'border-rose-300 bg-rose-50/30 focus:ring-rose-500 focus:border-rose-500'
                     : 'border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-300'
                 }`}
@@ -232,7 +274,9 @@ export default function StudentDetailsForm({ onStartTest, initialData }) {
             </button>
             {!isFormValid() && (
               <p className="text-center text-xs text-slate-400 mt-2">
-                * Complete all required fields above to unlock the test.
+                {isDuplicateEmail
+                  ? '* This email has already submitted a response.'
+                  : '* Complete all required fields above to unlock the test.'}
               </p>
             )}
           </div>
