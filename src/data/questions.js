@@ -65,4 +65,4 @@ export const TEST_QUESTIONS = [
 ];
 
 // Default Google Apps Script Web App Endpoint
-export const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBPS13xmg5vc0124MvXlyNW3kP-9FyY3Ag8buSspAfz4idfgKPgzAFTQWwPLakdgsOPQ/exec";
+export const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycH9TXySzZ7TxXArw3HyrGC7_GM6zVEzbrPPOXSbAToLyVcGgNrmv-oauii2d71Vp8TQ/exec";
