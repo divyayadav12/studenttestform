@@ -179,9 +179,14 @@ export default function App() {
     // Build payload for Google Sheets
     const endTimeFormatted = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
+    const studentPhoneStr = studentData?.phone ? String(studentData.phone).trim() : '';
+
     const payload = {
       studentName: studentData?.studentName || '',
-      phone: studentData?.phone || '',
+      phone: studentPhoneStr,
+      mobile: studentPhoneStr,
+      mobileNumber: studentPhoneStr,
+      email: studentPhoneStr, // Fallback for Apps Script versions reading email key
       caAttempt: studentData?.caAttempt || '',
       testDate: studentData?.testDate || new Date().toISOString().split('T')[0],
       testStartTime: studentData?.startTimeFormatted || '',

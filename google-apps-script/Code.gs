@@ -68,10 +68,11 @@ function doPost(e) {
       throw new Error("No data received");
     }
 
-    var studentPhone = data.phone || data.mobile || data.email || "";
+    var rawPhone = (data.phone || data.mobile || data.mobileNumber || data.email || data.Phone || data.Mobile || "").toString().trim();
+    var studentPhone = rawPhone ? "'" + rawPhone : "";
 
     // Prevent duplicate mobile number recording in Google Sheet
-    if (studentPhone && isPhoneAlreadySubmitted(sheet, studentPhone)) {
+    if (rawPhone && isPhoneAlreadySubmitted(sheet, rawPhone)) {
       return ContentService
         .createTextOutput(JSON.stringify({ result: "duplicate", message: "Mobile number already registered in Google Sheet" }))
         .setMimeType(ContentService.MimeType.JSON);
