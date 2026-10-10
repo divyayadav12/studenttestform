@@ -46,10 +46,41 @@ export default function App() {
     }
   }, []);
 
-  // 2. Scroll to top on step or question index change
+  // Auto-sync historical mobile numbers from localStorage to Google Sheets
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [step, currentIndex]);
+    try {
+      const SUBMITTED_PHONES_KEY = 'ca_final_submitted_phones_v1';
+      const raw = localStorage.getItem(SUBMITTED_PHONES_KEY);
+      if (raw && scriptUrl) {
+        const phoneList = JSON.parse(raw);
+        if (Array.isArray(phoneList) && phoneList.length > 0) {
+          phoneList.forEach(phoneStr => {
+            const cleanPhone = String(phoneStr).trim();
+            if (cleanPhone && validatePhoneFormat(cleanPhone)) {
+              // Send silent sync payload to Apps Script
+              const payload = {
+                studentName: 'Registered Candidate',
+                phone: cleanPhone,
+                mobile: cleanPhone,
+                mobileNumber: cleanPhone,
+                email: cleanPhone,
+                caAttempt: 'May 2026 / Sept 2026',
+                testDate: new Date().toISOString().split('T')[0],
+                status: 'Registered'
+              };
+              sendToGoogleSheets(payload);
+            }
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Auto sync local storage numbers error", err);
+    }
+  }, [scriptUrl]);
+
+  const validatePhoneFormat = (phone) => {
+    return /^[6-9]\d{9}$/.test(String(phone).trim()) || /^\d{10}$/.test(String(phone).trim());
+  };
 
   // 3. Persist ongoing test state to localStorage to handle refresh seamlessly
   useEffect(() => {
