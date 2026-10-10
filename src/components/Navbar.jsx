@@ -1,7 +1,7 @@
 import React from 'react';
-import { GraduationCap, ShieldCheck } from 'lucide-react';
+import { GraduationCap, ShieldCheck, Database } from 'lucide-react';
 
-export default function Navbar() {
+export default function Navbar({ onOpenAdmin }) {
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
       <div className="max-w-4xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between">
@@ -21,11 +21,17 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Badge hidden on mobile to prevent header squishing */}
-        <div className="hidden sm:block text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">
-          Student Assessment Form
-        </div>
+        {/* View Saved Numbers Button */}
+        <button
+          onClick={onOpenAdmin}
+          className="text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-200 shrink-0 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+          title="View saved numbers and sync to Excel"
+        >
+          <Database className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Saved Numbers</span>
+        </button>
       </div>
     </header>
   );
 }
+

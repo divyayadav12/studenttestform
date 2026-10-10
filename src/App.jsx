@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import StudentDetailsForm from './components/StudentDetailsForm';
 import TestQuestionCard from './components/TestQuestionCard';
 import ResultCard from './components/ResultCard';
+import AdminNumbersModal from './components/AdminNumbersModal';
 
 import { TEST_QUESTIONS, DEFAULT_SCRIPT_URL } from './data/questions';
 
@@ -18,6 +19,9 @@ export default function App() {
   const [answers, setAnswers] = useState({}); // { 0: 'A', 1: 'B', ... }
   const [timeLeft, setTimeLeft] = useState(60); // 60 seconds per question
   
+  // Admin modal state
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+
   // Timing data
   const [testStartTime, setTestStartTime] = useState(null);
   const [resultData, setResultData] = useState(null);
@@ -289,7 +293,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Header Bar */}
-      <Navbar />
+      <Navbar onOpenAdmin={() => setIsAdminOpen(true)} />
 
       {/* Main Content Area */}
       <main className="flex-1 pb-12">
@@ -320,6 +324,13 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Admin Numbers & Excel Sync Modal */}
+      <AdminNumbersModal
+        isOpen={isAdminOpen}
+        onClose={() => setIsAdminOpen(false)}
+        scriptUrl={scriptUrl}
+      />
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
